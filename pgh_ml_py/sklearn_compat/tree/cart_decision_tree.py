@@ -1,24 +1,16 @@
 """CART on the Bank Note dataset"""
-from __future__ import print_function
+from __future__ import (absolute_import, division,
+                        unicode_literals, print_function)
 from collections import defaultdict
 # import json
-from random import seed  # randrange, sample
-import sys
-from time import time
+# from random import seed  # randrange, sample
 
 import numpy as np
 import pandas as pd
-from sklearn_utils import Bunch
 from sklearn.utils.validation import check_X_y, check_array, check_is_fitted
 from sklearn.utils.multiclass import unique_labels
 
-def load_banknote_authentication():
-    """Load a CSV file, converting strings to floats and returns the data"""
-    df = pd.read_csv("banknote_authentication.csv")
-    return Bunch(dataframe=df,
-                 data=df[df.columns[:-1]].as_matrix(),
-                 target=df[df.columns[-1]].as_matrix(),
-                 feature_names=df.columns[:-1].tolist())
+
 
 
 def display_tree(tree, classes, indent=''):
@@ -73,7 +65,8 @@ class CartDecisionTreeClassifier(object):
         self.y_ = None
 
     def __repr__(self):
-        return "CartDecisionTreeClassifier(max_depth=%d, min_samples_split=%d)" % \
+        return "CartDecisionTreeClassifier(" \
+            "max_depth=%d, min_samples_split=%d)" % \
             (self.max_depth, self.min_samples_split)
 
     def get_params(self, deep=True):
@@ -92,7 +85,7 @@ class CartDecisionTreeClassifier(object):
         for k, v in params.items():
             setattr(self, k, v)
         return self
-        
+
     def fit(self, X, y):
         """trains a decision tree"""
         X, y = check_X_y(X, y)
@@ -207,7 +200,6 @@ class CartDecisionTreeClassifier(object):
 
     def _to_terminal(self, grp):
         """return a terminal node - majority class in 'y'"""
-        # targets = grp['y']
         return np.argmax(np.bincount(grp['y']))
 
     def _split(self, node, depth):
@@ -223,8 +215,8 @@ class CartDecisionTreeClassifier(object):
             elif len(right_gr['y']):
                 term = self._to_terminal(right_gr)
             else:
-                print ("ERROR: both left and right groups are empty")
-                sys.exit(1)
+                raise Exception("ERROR: unable create terminal node. "
+                                "both left and right splits are empty")
             node.left, node.right = term, term
             return
         # if we've hit max depth force both left and right to be terminal nodes
