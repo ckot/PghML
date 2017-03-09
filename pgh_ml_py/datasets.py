@@ -1,8 +1,11 @@
 
-import os
+from os.path import dirname, join
 
 import numpy as np
 import pandas as pd
+
+DATASETS_PATH = join(dirname(dirname(__file__)), "datasets")
+
 
 class Bunch(object):
     """
@@ -31,17 +34,21 @@ class Bunch(object):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
+    def _repr_fld(self, fld):
+        val = getattr(self, fld)
+        if isinstance(val, np.ndarray):
+            return "%s=ndarray%s" % (fld, val.shape)
+        else:
+            return "%s=%s" % (fld, type(val))
+
     def __repr__(self):
         fld_vals = []
-        for std_var in self._STD_FLD_NAMES:
-            if hasattr(self, std_var):
-                fld_vals.append('%s=%s' % (std_var,
-                                           type(getattr(self, std_var))))
-        for var in sorted(vars(self)):
-            if var not in self._STD_FLD_NAMES:
-                fld_vals.append('%s: %s' % (var,
-                                            type(getattr(self, var))))
-
+        for fld_name in self._STD_FLD_NAMES:
+            if hasattr(self, fld_name):
+                fld_vals.append(self._repr_fld(fld_name))
+        for fld_name in sorted(vars(self)):
+            if fld_name not in self._STD_FLD_NAMES:
+                fld_vals.append(self._repr_fld(fld_name))
         return 'Bunch(%s)' % ', '.join(fld_vals)
 
 
@@ -51,8 +58,7 @@ def load_banknote_authentication():
     returns the dataframe as a Bunch object.
     converting strings to floats and returns the data"""
     # print os.getcwd()
-    datasets_path = os.path.dirname(__file__)
-    df = pd.read_csv(os.path.join(datasets_path, "banknote_authentication.csv"))
+    df = pd.read_csv(join(DATASETS_PATH, "banknote_authentication.csv"))
     return Bunch(dataframe=df,
                  data=df[df.columns[:-1]].as_matrix(),
                  target=df[df.columns[-1]].as_matrix(),
