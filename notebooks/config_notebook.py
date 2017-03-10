@@ -9,3 +9,5 @@ def setup_pgh_ml_path():
     if curr_path.endswith('PghML'):
         if curr_path not in sys.path:
             sys.path.append(curr_path)
+
+setup_pgh_ml_path()
