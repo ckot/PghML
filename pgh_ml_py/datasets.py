@@ -13,7 +13,8 @@ class Bunch(object):
     javascript object or python defaultdict, but unlike a defaultdict, allows
     you to pass kwargs to it instead of a fixed set of positional params
 
-    As a convention, in sklearn, common field names are (at a minimum):
+    Scikit-learn uses the following field names as a convention.  at a minimum
+    you should provide:
     -------------------------------------------------------------------
     data -> the features matrix
     target -> (if supervised learning) the vector or labels
@@ -23,12 +24,14 @@ class Bunch(object):
     feature_names -> labels for the columns in data (often extracted by the
                      csv header, but you may need to pass them in manually
                      if there is none)
-    labels -> (if supervised learning) string values which map to the set
-               of class values (typically for classifiers where the class
-               values are integers)
-    descr ->  string, possibly marked up describing a dataset
+    target_names -> (if supervised learning) the meaning of labels
+    feature_names -> the meaning of the features
+    DESCR ->  string, possibly marked up describing a dataset
+
+    These are simply conventions, and you can use whatever you want as well as
+    adding any additional fields you desire.
     """
-    _STD_FLD_NAMES = ['data', 'target', 'feature_names', 'labels', 'descr']
+    _STD_FLD_NAMES = ['data', 'target', 'feature_names', 'target_names', 'DESCR']
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
@@ -57,10 +60,8 @@ def load_banknote_authentication():
     automatically converting fields to the correct types), and
     returns the dataframe as a Bunch object.
     converting strings to floats and returns the data"""
-    # print os.getcwd()
     df = pd.read_csv(join(DATASETS_PATH, "banknote_authentication.csv"))
     return Bunch(dataframe=df,
                  data=df[df.columns[:-1]].as_matrix(),
                  target=df[df.columns[-1]].as_matrix(),
                  feature_names=df.columns[:-1].tolist())
-    # return {}
